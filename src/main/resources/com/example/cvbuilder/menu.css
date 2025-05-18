@@ -1,0 +1,33 @@
+.root {
+    -fx-background-color: #00a3e0;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.login-container {
+    -fx-background-color: white;
+    -fx-padding: 30px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.label-title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #00a3e0;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #00a3e0;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: #008dc1;
+}

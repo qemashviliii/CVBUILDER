@@ -1,0 +1,48 @@
+.root {
+    -fx-background-color: #00a3e0;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.login-container {
+    -fx-background-color: white;
+    -fx-padding: 40px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.label-title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #00a3e0;
+    -fx-font-weight: bold;
+}
+
+.text-field,
+.password-field {
+    -fx-pref-width: 250px;
+    -fx-padding: 10px;
+    -fx-background-color: #e0e0e0;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: transparent;
+}
+
+.button {
+    -fx-background-color: #00a3e0;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: #008dc1;
+}
+.label-error {
+     -fx-text-fill: red;
+     -fx-font-size: 12px;
+     -fx-font-weight: bold;
+ }
