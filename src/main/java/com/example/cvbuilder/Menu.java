@@ -17,29 +17,31 @@ import java.sql.*;
 
 
 public class Menu extends Application {
+
+    //JDBC connection
     private static String url = "jdbc:postgresql://localhost:5432/CVBuilderApplication";
     private static String user = "postgres";
     private static String password = "Grafikaferwera12.";
     private static Connection connection;
     private static Connection getConnection() throws SQLException {
-        if (connection == null) {
-            connection = DriverManager.getConnection(url, user, password);
-        }
-        return connection;
+        return DriverManager.getConnection(url, user, password);
     }
 
 
 
 
     private Stage primaryStage;
+    //Function to check if user exists in database
     private boolean isRegistered(String username,String email){
         String checkQuery = "SELECT 1 FROM Accounts WHERE username = ? OR email = ? ";
         try (Connection connection1 = getConnection();
-             PreparedStatement statement = getConnection().prepareStatement(checkQuery)) {
+             PreparedStatement statement = connection1.prepareStatement(checkQuery)) {
+
             statement.setString(1, username);
             statement.setString(2, email);
 
             ResultSet rs = statement.executeQuery();
+            connection1.close();
             return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,7 +56,10 @@ public class Menu extends Application {
          this.primaryStage.show();
 
     }
+
+    // Start Page
     private void ShowMenu() {
+        //CSS
         Label titleLabel = new Label("Main Menu");
         titleLabel.getStyleClass().add("label-title");
 
@@ -82,13 +87,14 @@ public class Menu extends Application {
 
         primaryStage.setScene(scene);
     }
-
+  //Function to login in your CV
     private void ShowLoginPage() {
+        //CSS
         Label titleLabel = new Label("Login");
         titleLabel.getStyleClass().add("label-title");
 
         TextField userField = new TextField();
-        userField.setPromptText("Username");
+        userField.setPromptText("Username Or Email");
         userField.getStyleClass().add("text-field");
 
         TextField passwordField = new PasswordField();
@@ -100,10 +106,13 @@ public class Menu extends Application {
         loginButton.getStyleClass().add("button");
         menuButton.getStyleClass().add("button");
 
+        Label messageLabel = new Label();
+        messageLabel.getStyleClass().add("label-error");
+
         HBox buttonBox = new HBox(10, loginButton, menuButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox form = new VBox(15, titleLabel, userField, passwordField, buttonBox);
+        VBox form = new VBox(15, titleLabel, userField, passwordField, buttonBox, messageLabel);
         form.setAlignment(Pos.CENTER);
         form.getStyleClass().add("login-container");
 
@@ -114,12 +123,50 @@ public class Menu extends Application {
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         menuButton.setOnAction(e -> ShowMenu());
+        //Login Function
+        loginButton.setOnAction(e -> {
+            String user = userField.getText();
+            String password = passwordField.getText();
+
+            if (user.isEmpty() || password.isEmpty()) {
+                messageLabel.setText("Please fill fields");
+                return;
+            }
+
+            String query = "SELECT 1 FROM Accounts WHERE (username = ? OR email = ?) AND password = ?";
+            try (Connection conn = getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                stmt.setString(1, user);
+                stmt.setString(2, user);
+                stmt.setString(3, password);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        messageLabel.setText("Login successful");
+                        ShowMenu();
+                    } else {
+                        messageLabel.setText("Invalid Input");
+                    }
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                messageLabel.setText("Error..");
+            }
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
 
+
+
+
+    }
+ //Function to Register your account
     private void ShowRegisterPage() {
+        //CSS
+
         Label titleLabel = new Label("Register Account");
         titleLabel.getStyleClass().add("label-title");
 
@@ -159,7 +206,7 @@ public class Menu extends Application {
 
         menuButton.setOnAction(e -> ShowMenu());
 
-
+  //Main Register function
         registerButton.setOnAction(e->{
             String username = usernameField.getText();
             String email = emailField.getText();
@@ -171,12 +218,12 @@ public class Menu extends Application {
             }
 
             if (isRegistered(username, email)) {
-                messageLabel.setText("This User or Email is already used.");
+                messageLabel.setText("This User or Email is already used");
                 return;
             }
 
 
-
+           //Inserting your inputs in database
             String insertQuery = "INSERT INTO Accounts (username, email, password) VALUES (?, ?, ?)";
             try (PreparedStatement statement = getConnection().prepareStatement(insertQuery)){
                 statement.setString(1,username);
@@ -184,9 +231,11 @@ public class Menu extends Application {
                 statement.setString(3,password);
                 statement.executeUpdate();
                 messageLabel.setText("Added successfully");
+                getConnection().close();
+                ShowMenu();
             }catch (SQLException exception){
                 exception.printStackTrace();
-                messageLabel.setText("Registration went wrong!" + exception.getMessage());
+                messageLabel.setText("Oopss.. Something went wrong");
             }
         });
 
