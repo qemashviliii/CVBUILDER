@@ -1,18 +1,20 @@
 package com.example.cvbuilder;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.sql.*;
 
 
@@ -112,6 +114,8 @@ public class Menu extends Application {
         HBox buttonBox = new HBox(10, loginButton, menuButton);
         buttonBox.setAlignment(Pos.CENTER);
 
+
+
         VBox form = new VBox(15, titleLabel, userField, passwordField, buttonBox, messageLabel);
         form.setAlignment(Pos.CENTER);
         form.getStyleClass().add("login-container");
@@ -121,6 +125,8 @@ public class Menu extends Application {
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+
 
         menuButton.setOnAction(e -> ShowMenu());
         //Login Function
@@ -144,7 +150,7 @@ public class Menu extends Application {
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         messageLabel.setText("Login successful");
-                        ShowMenu();
+                        ShowCVPage();
                     } else {
                         messageLabel.setText("Invalid Input");
                     }
@@ -232,7 +238,7 @@ public class Menu extends Application {
                 statement.executeUpdate();
                 messageLabel.setText("Added successfully");
                 getConnection().close();
-                ShowMenu();
+                ShowCVPage();
             }catch (SQLException exception){
                 exception.printStackTrace();
                 messageLabel.setText("Oopss.. Something went wrong");
@@ -246,7 +252,115 @@ public class Menu extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+    private void ShowCVPage() {
+     //creating fields and labels
+        Label titleLabel = new Label("CV BUILDER");
+        titleLabel.getStyleClass().add("cv-title");
 
+        Label fullNameLabel = new Label("FULL NAME:");
+        TextField fullNameField = new TextField();
+
+        Label addressLabel = new Label("ADDRESS:");
+        TextField addressField = new TextField();
+
+        Label contactLabel = new Label("CONTACT:");
+        TextField contactField = new TextField();
+
+        Label emailLabel = new Label("EMAIL:");
+        TextField emailField = new TextField();
+
+        //image upload
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(300);
+        imageView.setPreserveRatio(true);
+
+        Button selectImageButton = new Button("Upload Image");
+        selectImageButton.getStyleClass().add("button");
+
+        selectImageButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select Image");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+            );
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if (selectedFile != null) {
+                try {
+                    Image image = new Image(selectedFile.toURI().toString());
+                    imageView.setImage(image);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+        HBox imageBox = new HBox(10, selectImageButton, imageView);
+        imageBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label skillsLabel = new Label("SKILLS");
+        TextField skill1Field = new TextField();
+        TextField skill2Field = new TextField();
+
+        Label workExpLabel = new Label("WORK EXPERIENCE:");
+        TextField workExpField = new TextField();
+
+        Label collegeLabel = new Label("COLLEGE/UNIVERSITY:");
+        TextField collegeField = new TextField();
+
+        Label qual1Title = new Label("QUALIFICATION 1:");
+        TextField qualAField = new TextField();
+
+        Label qual2Title = new Label("QUALIFICATION 2:");
+        TextField qualBField = new TextField();
+
+        Button generateButton = new Button("CREATE");
+        generateButton.getStyleClass().add("button");
+         //placement of buttons, fields, labels
+
+        GridPane leftPane = new GridPane();
+        leftPane.setVgap(10);
+        leftPane.setHgap(10);
+        leftPane.add(fullNameLabel, 0, 0);
+        leftPane.add(fullNameField, 1, 0);
+        leftPane.add(addressLabel, 0, 1);
+        leftPane.add(addressField, 1, 1);
+        leftPane.add(contactLabel, 0, 2);
+        leftPane.add(contactField, 1, 2);
+        leftPane.add(emailLabel, 0, 3);
+        leftPane.add(emailField, 1, 3);
+        leftPane.add(imageBox, 0, 4, 2, 1);
+        leftPane.getStyleClass().add("cv-left");
+
+        GridPane rightPane = new GridPane();
+        rightPane.setVgap(10);
+        rightPane.setHgap(10);
+        rightPane.add(skillsLabel, 0, 0);
+        rightPane.add(skill1Field, 0, 1);
+        rightPane.add(skill2Field, 0, 2);
+        rightPane.add(workExpLabel, 0, 3);
+        rightPane.add(workExpField, 1, 3);
+        rightPane.add(collegeLabel, 0, 4);
+        rightPane.add(collegeField, 1, 4);
+        rightPane.add(qual1Title, 0, 5);
+        rightPane.add(qualAField, 1, 5);
+        rightPane.add(qual2Title, 0, 6);
+        rightPane.add(qualBField, 1, 6);
+        rightPane.getStyleClass().add("cv-right");
+        HBox content = new HBox(30, leftPane, rightPane);
+        content.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(20, titleLabel, content, generateButton);
+        layout.setAlignment(Pos.CENTER);
+        layout.getStyleClass().add("cv-container");
+
+        Scene scene = new Scene(layout, 900, 500);
+        scene.getStylesheets().add(getClass().getResource("cv.css").toExternalForm());
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
 
 
